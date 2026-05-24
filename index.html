@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITTA - Sistem Informasi Tracking dan Transaksi Bahan Ajar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Vue.js 2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="container">
+                <a href="index.html" class="logo">
+                    <img src="img/logo-ut.png" alt="Logo UT" style="height: 32px; object-fit: contain;"> SITTA
+                </a>
+                <div class="nav-links" style="align-items: center;">
+                    <template v-if="isLoggedIn">
+                        <a href="stok.html">Stok Bahan Ajar</a>
+                        <a href="tracking.html">Tracking DO</a>
+                        <div class="nav-user-badge">
+                            <span class="role-dot"></span>
+                            {{ user.nama }} ({{ user.role }})
+                        </div>
+                        <a @click="logout" class="btn-logout-nav">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Keluar
+                        </a>
+                    </template>
+                    <template v-else>
+                        <a href="login.html" class="btn btn-primary btn-sm" style="padding: 8px 16px;">
+                            Masuk Ke Sistem
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hero" style="min-height: calc(100vh - 70px);">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <!-- Dynamic Greeting Section when Logged In -->
+                    <template v-if="isLoggedIn">
+                        <div class="profile-greeting-card">
+                            <div class="greeting-time-box">
+                                <span class="greeting-icon">{{ greeting.icon }}</span>
+                                <h2 class="greeting-title">{{ greeting.text }}, <span>{{ user.nama }}</span>!</h2>
+                            </div>
+                            <p class="greeting-message-text">
+                                Selamat datang kembali di portal kerja SITTA. Anda masuk sebagai <strong>{{ user.role
+                                    }}</strong> untuk area kerja <strong>{{ user.lokasi }}</strong>. Silakan pilih aksi
+                                di bawah untuk memulai aktivitas manajemen Anda hari ini.
+                            </p>
+                            <div class="user-profile-meta">
+                                <div class="meta-field">
+                                    <span class="meta-label">Hak Akses</span>
+                                    <span class="meta-value">{{ user.role }}</span>
+                                </div>
+                                <div class="meta-field">
+                                    <span class="meta-label">Wilayah Kerja</span>
+                                    <span class="meta-value">{{ user.lokasi }}</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <a href="stok.html" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                        </path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                    Manajemen Stok
+                                </a>
+                                <a href="tracking.html" class="btn btn-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="1" y="3" width="15" height="13"></rect>
+                                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                    </svg>
+                                    Tracking DO
+                                </a>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Welcome Screen when Not Logged In -->
+                    <template v-else>
+                        <h1>Selamat Datang di <span>SITTA</span></h1>
+                        <p>Sistem Informasi Tracking dan Transaksi Bahan Ajar Universitas Terbuka. Kelola stok dan lacak
+                            pengiriman buku dengan mudah dan efisien.</p>
+                        <div
+                            style="background: rgba(67, 97, 238, 0.05); border: 1px dashed var(--primary); padding: 20px; border-radius: var(--radius-md); margin-bottom: 30px;">
+                            <p style="font-size: 0.95rem; margin-bottom: 0; color: var(--dark);">
+                                <strong>🔒 Akses Terbatas:</strong> Silakan masuk ke dalam sistem terlebih dahulu
+                                menggunakan akun Universitas Terbuka Anda untuk mengakses data persediaan stok bahan
+                                ajar dan tracking DO.
+                            </p>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="login.html" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
+                                Masuk ke Sistem
+                            </a>
+                        </div>
+                    </template>
+                </div>
+                <div class="hero-image">
+                    <div class="glass-card decorative-card">
+                        <div class="card-header">
+                            <h3>Ringkasan Sistem</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat-item">
+                                <div class="stat-icon bg-blue">📦</div>
+                                <div class="stat-info">
+                                    <h4>Stok Terpantau</h4>
+                                    <span>Real-time Update</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon bg-green">🚚</div>
+                                <div class="stat-info">
+                                    <h4>Pengiriman</h4>
+                                    <span>Lacak Status DO</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                isLoggedIn: false,
+                user: null,
+                greeting: {
+                    text: 'Selamat Datang',
+                    icon: '👋'
+                }
+            },
+            mounted() {
+                this.checkAuth();
+                this.updateGreeting();
+                // Opsional: perbarui greeting secara berkala setiap menit jika tab tetap terbuka
+                setInterval(this.updateGreeting, 60000);
+            },
+            methods: {
+                checkAuth() {
+                    const userData = localStorage.getItem('sitta_user');
+                    if (userData) {
+                        this.isLoggedIn = true;
+                        this.user = JSON.parse(userData);
+                    } else {
+                        this.isLoggedIn = false;
+                        this.user = null;
+                    }
+                },
+                logout() {
+                    localStorage.removeItem('sitta_user');
+                    this.isLoggedIn = false;
+                    this.user = null;
+                    // Refresh halaman agar kembali ke mode belum login
+                    window.location.reload();
+                },
+                updateGreeting() {
+                    const hours = new Date().getHours();
+                    if (hours >= 4 && hours < 11) {
+                        this.greeting = { text: 'Selamat Pagi', icon: '🌅' };
+                    } else if (hours >= 11 && hours < 15) {
+                        this.greeting = { text: 'Selamat Siang', icon: '☀️' };
+                    } else if (hours >= 15 && hours < 18) {
+                        this.greeting = { text: 'Selamat Sore', icon: '🌇' };
+                    } else {
+                        this.greeting = { text: 'Selamat Malam', icon: '🌙' };
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

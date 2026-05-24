@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SITTA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Vue.js 2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body class="login-page">
+    <div id="app" class="login-card">
+        <div class="login-header">
+            <a href="index.html" class="logo" style="justify-content: center; margin-bottom: 15px; gap: 10px;">
+                <img src="img/logo-ut.png" alt="Logo UT" style="height: 42px; object-fit: contain;"> SITTA
+            </a>
+            <h2>Masuk ke Sistem</h2>
+            <p>Silakan masuk menggunakan akun Universitas Terbuka Anda</p>
+        </div>
+
+        <!-- Inline Alert Error -->
+        <transition name="fade">
+            <div class="alert-box alert-danger" v-if="errorMessage">
+                <span>⚠️</span>
+                <div>{{ errorMessage }}</div>
+            </div>
+        </transition>
+
+        <form @submit.prevent="handleLogin">
+            <div class="form-group">
+                <label for="email">Alamat Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-control" 
+                    placeholder="nama@ut.ac.id" 
+                    v-model="email" 
+                    required 
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Kata Sandi</label>
+                <div class="password-wrapper">
+                    <input 
+                        :type="showPassword ? 'text' : 'password'" 
+                        id="password" 
+                        class="form-control" 
+                        placeholder="••••••••" 
+                        v-model="password" 
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button 
+                        type="button" 
+                        class="password-toggle" 
+                        @click="showPassword = !showPassword"
+                        title="Tampilkan/Sembunyikan password"
+                    >
+                        <!-- SVG icons for show/hide -->
+                        <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;" :disabled="isLoading">
+                    <span v-if="isLoading">Memproses Masuk...</span>
+                    <span v-else>Masuk ke Akun</span>
+                </button>
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 25px; font-size: 0.85rem; color: var(--gray-600);">
+            Kembali ke <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">Beranda</a>
+        </div>
+    </div>
+
+    <!-- Import data pengguna -->
+    <script src="dataPengguna.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                email: '',
+                password: '',
+                showPassword: false,
+                errorMessage: '',
+                isLoading: false
+            },
+            mounted() {
+                // Jika sudah login, redirect langsung ke index.html
+                if (localStorage.getItem('sitta_user')) {
+                    window.location.href = 'index.html';
+                }
+            },
+            methods: {
+                handleLogin() {
+                    this.errorMessage = '';
+                    this.isLoading = true;
+
+                    // Simulasi loading 600ms untuk efek UX premium
+                    setTimeout(() => {
+                        // Cari user berdasarkan email
+                        const user = window.dataPengguna.find(
+                            u => u.email.toLowerCase().trim() === this.email.toLowerCase().trim()
+                        );
+
+                        if (!user) {
+                            this.errorMessage = 'Akun email tidak ditemukan dalam sistem SITTA!';
+                            this.isLoading = false;
+                            return;
+                        }
+
+                        if (user.password !== this.password) {
+                            this.errorMessage = 'Kata sandi yang Anda masukkan salah!';
+                            this.isLoading = false;
+                            return;
+                        }
+
+                        // Berhasil login
+                        localStorage.setItem('sitta_user', JSON.stringify(user));
+                        
+                        // Redirect ke index.html
+                        window.location.href = 'index.html';
+                    }, 600);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
